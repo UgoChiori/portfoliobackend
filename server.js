@@ -13,7 +13,7 @@ app.use((req, res, next) => {
   console.log("Incoming:", req.method, req.url);
   next();
 });
-const PORT = process.env.PORT || 1000;
+const PORT = process.env.PORT || 4000;
 
 app.use(bodyParser.json());
 
