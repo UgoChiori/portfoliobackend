@@ -16,7 +16,27 @@ app.use((req, res, next) => {
 const PORT = process.env.PORT || 1000;
 
 app.use(bodyParser.json());
-app.use(cors());
+
+const allowedOrigins = [
+  "http://localhost:3000", 
+  "https://kaleidoscopic-treacle-06e2f2.netlify.app",
+];
+
+app.use(
+  cors({
+    origin: function (origin, callback) {
+      // Allow requests with no origin (like Postman)
+      if (!origin) return callback(null, true);
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      } else {
+        return callback(new Error("CORS not allowed for this origin"), false);
+      }
+    },
+    methods: ["GET", "POST"],
+  })
+);
+
 app.use(bodyParser.urlencoded({ extended: true }));
 
 mongoose
