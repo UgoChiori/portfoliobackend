@@ -9,19 +9,24 @@ import { Resend } from "resend";
 
 dotenv.config();
 
-const resend = new Resend(process.env.RESEND_API_KEY)
+// const resend = new Resend(process.env.);
 const app = express();
 app.use((req, res, next) => {
   console.log("Incoming:", req.method, req.url);
   next();
 });
 const PORT = process.env.PORT || 4000;
+const resend = new Resend(process.env.RESEND_API_KEY);
+
+
+
+
 
 app.use(bodyParser.json());
 
 const allowedOrigins = [
-  "http://localhost:3000", 
-  "https://kaleidoscopic-treacle-06e2f2.netlify.app",
+  "http://localhost:5173/", 
+  "https://ugo-chiori.vercel.app/",
 ];
 
 app.use(
@@ -80,6 +85,8 @@ app.get("/test-email", async (req, res) => {
   }
 });
 
+
+
 app.post("/api/contact", async (req, res) => {
   const { name, email, message } = req.body;
 
@@ -94,7 +101,7 @@ app.post("/api/contact", async (req, res) => {
 
     // Send email using Resend
     await resend.emails.send({
-      from: "Portfolio Contact <onboarding@resend.dev>", // must match Resend domain format
+      from: "Portfolio Contact <onboarding@resend.dev>", 
       to: process.env.EMAIL_TO,
       subject: `New Contact Form Message from ${name}`,
       reply_to: email,
