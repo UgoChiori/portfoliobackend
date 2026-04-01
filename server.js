@@ -18,14 +18,10 @@ app.use((req, res, next) => {
 const PORT = process.env.PORT || 4000;
 const resend = new Resend(process.env.RESEND_API_KEY);
 
-
-
-
-
 app.use(bodyParser.json());
 
 const allowedOrigins = [
-  "http://localhost:5173", 
+  "http://localhost:5173",
   "https://ugo-chiori.vercel.app",
 ];
 
@@ -41,7 +37,7 @@ app.use(
       }
     },
     methods: ["GET", "POST"],
-  })
+  }),
 );
 
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -57,7 +53,6 @@ mongoose
 
 console.log("User:", process.env.EMAIL_USER);
 console.log("Pass:", process.env.EMAIL_PASSWORD ? "Loaded ✅" : "Missing ❌");
-
 
 const transporter = nodemailer.createTransport({
   service: "gmail",
@@ -85,10 +80,8 @@ app.get("/test-email", async (req, res) => {
   }
 });
 
-
-
 app.post("/api/contact", async (req, res) => {
-  const { name, email, message } = req.body;
+  const { name, email, message, organization, services } = req.body;
 
   if (!name || !email || !message) {
     return res.status(400).json({ error: "All fields are required" });
@@ -96,24 +89,33 @@ app.post("/api/contact", async (req, res) => {
 
   try {
     // Save to MongoDB
-    const newMessage = new Message({ name, email, message });
+    const newMessage = new Message({
+      name,
+      email,
+      message,
+      organization,
+      services,
+    });
     await newMessage.save();
 
     // Send email using Resend
     await resend.emails.send({
-      from: "Portfolio Contact <onboarding@resend.dev>", 
+      from: "Portfolio Contact <onboarding@resend.dev>",
       to: process.env.EMAIL_TO,
       subject: `New Contact Form Message from ${name}`,
       reply_to: email,
       html: `
         <div style="font-family: Arial, sans-serif; padding: 20px; background-color: #f9f9f9;">
           <h2 style="color: #4f7a20; margin-bottom: 15px;">New Contact Form Submission</h2>
-          <p><strong style="color:#555;">Name:</strong> ${name}</p>
-          <p><strong style="color:#555;">Email:</strong> ${email}</p>
-          <p><strong style="color:#555;">Message:</strong></p>
-          <div style="background: #fff; padding: 15px; border: 1px solid #4f7a20; border-radius: 5px; line-height: 1.5;">
+          <p><strong>Name:</strong> ${name}</p>
+  <p><strong>Email:</strong> ${email}</p>
+  <p><strong>Organization:</strong> ${organization || "N/A"}</p>
+  <p><strong>Services:</strong> ${services || "N/A"}</p>
+  <p><strong>Message:</strong></p>
+  <div style="background: #fff; padding: 15px; border: 1px solid #4f7a20; border-radius: 5px; line-height: 1.5;">
             ${message}
           </div>
+      
           <p style="margin-top: 20px; font-size: 12px; color: #888;">
             ⚡ This message was sent from your website contact form.
           </p>
@@ -148,15 +150,15 @@ app.post("/api/contact", async (req, res) => {
 //       html: `
 //     <div style="font-family: Arial, sans-serif; padding: 20px; background-color: #f9f9f9;">
 //       <h2 style="color: #4f7a20; margin-bottom: 15px;"> New Contact Form Submission</h2>
-      
+
 //       <p style="margin: 5px 0;"><strong style="color:#555;">Name:</strong> ${name}</p>
 //       <p style="margin: 5px 0;"><strong style="color:#555;">Email:</strong> ${email}</p>
-      
+
 //       <p style="margin: 10px 0;"><strong style="color:#555;">Message:</strong></p>
 //       <div style="background: #fff; padding: 15px; border: 1px solid #4f7a20; border-radius: 5px; line-height: 1.5;">
 //         ${message}
 //       </div>
-      
+
 //       <p style="margin-top: 20px; font-size: 12px; color: #888;">
 //         ⚡ This message was sent from your website contact form.
 //       </p>
@@ -178,3 +180,10 @@ app.get("/", (req, res) => {
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
 });
+
+// <p><strong style="color:#555;">Name:</strong> ${name}</p>
+// <p><strong style="color:#555;">Email:</strong> ${email}</p>
+// <p><strong style="color:#555;">Message:</strong></p>
+// <div style="background: #fff; padding: 15px; border: 1px solid #4f7a20; border-radius: 5px; line-height: 1.5;">
+//   ${message}
+// </div>
