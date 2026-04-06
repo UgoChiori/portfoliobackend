@@ -22,7 +22,7 @@ app.use(bodyParser.json());
 
 const allowedOrigins = [
   "http://localhost:5173",
-  "https://ugo-chiori.vercel.app",
+  "https://ugo-chiori.vercel.app/contact",
 ];
 
 app.use(
