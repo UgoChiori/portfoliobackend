@@ -22,7 +22,7 @@ app.use(bodyParser.json());
 
 const allowedOrigins = [
   "http://localhost:5173",
-  "https://ugo-chiori.vercel.app/contact",
+  "https://ugo-chiori.vercel.app",
 ];
 
 app.use(
@@ -33,10 +33,11 @@ app.use(
       if (allowedOrigins.includes(origin)) {
         return callback(null, true);
       } else {
+        console.log("CORS blocked this origin:", origin); // This will show in Render logs
         return callback(new Error("CORS not allowed for this origin"), false);
       }
     },
-    methods: ["GET", "POST"],
+    methods: ["GET", "POST", "OPTIONS"],
   }),
 );
 
